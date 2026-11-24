@@ -1,42 +1,62 @@
 const min = 1;
 const max = 100;
+let nbreEssais = 0;
+let tentative = 0;
 
-
-function genererNombre(min,max) {
-   return Math.floor(Math.random()*(max-min+1)+min);
+function genererNombre(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-let nbreSecret= genererNombre(min,max);
-console.log("nbresecret = "+nbreSecret)
+let secret = genererNombre(min, max);
+console.log("nbresecret = " + secret);
 
+function demanderTentative() {
+  let demander = prompt("Choisissez un nombre entre 1 et 100");
 
-const nbreJoueur =35;
-let nbreTenatives=0;
+  if (demander === null) {
+    return null;
+  }
 
-function verifierTentative (nbreJoueur){
+  if (demander === "") {
+    console.log("veuillez rentrer un nombre");
+    return false;
+  }
 
-    if (nbreJoueur>nbreSecret){
-        console.log("Trop Haut")
-    }else if (nbreJoueur<nbreSecret){
-        console.log("Trop bas")
-    }else  console.log(`Bravo ! vous avez trouvé. `)
+  demander = Number(demander);
+
+  if (isNaN(demander)) {
+    console.log("N'est pas un nombre !");
+    return false;
+  }
+
+  if (demander > max || demander < min) {
+    console.log("Rentrer un nombre compris ds la plage ");
+    return false;
+  }
+
+  return demander;
 }
 
-verifierTentative(nbreJoueur);
+function afficherResultat() {
+  while (tentative !== secret) {
+    tentative = demanderTentative();
 
+    if (tentative === null) {
+      break;
+    } else if (tentative === false) {
+      console.log("Réessayer");
+    } else {
+      nbreEssais++;
 
+      if (tentative < secret) {
+        console.log("Trop Bas");
+      } else if (tentative > secret) {
+        console.log("Trop Haut");
+      } else {
+        console.log("bravo");
+      }
+    }
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+afficherResultat();
