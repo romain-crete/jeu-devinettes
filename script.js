@@ -1,17 +1,30 @@
+//--------------VARIABLES------------
+
+// Configuration du jeu
 const min = 1;
 const max = 100;
-let nbreEssais = 0;
-let tentative = 0;
 
+// Statistique du jeu
+const statistique = {
+  tentative: 0,
+  secret: genererNombre(min, max),
+  historique: [],
+  tempsDebut: 0,
+  tempsFin: 0,
+  duree: 0,
+  aGagne: false,
+};
+
+//--------------FONCTIONS------------
+
+// Génération du nombre secret
 function genererNombre(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-let secret = genererNombre(min, max);
-console.log("nbresecret = " + secret);
-
-function demanderTentative() {
-  let demander = prompt("Choisissez un nombre entre 1 et 100");
+//Vérification du nombre rentré par le joueur
+function verifierTentative() {
+  let demander = prompt(`Choisissez un nombre entre ${min} et ${max}`);
 
   if (demander === null) {
     return null;
@@ -37,26 +50,61 @@ function demanderTentative() {
   return demander;
 }
 
-function afficherResultat() {
-  while (tentative !== secret) {
-    tentative = demanderTentative();
+// Boucle principale du jeu
+function demanderTentative() {
+  while (statistique.tentative !== statistique.secret) {
+    statistique.tentative = verifierTentative();
 
-    if (tentative === null) {
+    if (statistique.tentative === null) {
       break;
-    } else if (tentative === false) {
+    } else if (statistique.tentative === false) {
       console.log("Réessayer");
     } else {
-      nbreEssais++;
+      statistique.historique.push(statistique.tentative);
 
-      if (tentative < secret) {
+      if (statistique.tentative < statistique.secret) {
         console.log("Trop Bas");
-      } else if (tentative > secret) {
+      } else if (statistique.tentative > statistique.secret) {
         console.log("Trop Haut");
       } else {
+        statistique.aGagne = true;
         console.log("bravo");
       }
     }
   }
 }
 
-afficherResultat();
+// Affichage des statistiques du jeu
+function afficherResultat() {
+  if (statistique.aGagne) {
+    for (let i = 0; i < statistique.historique.length; i++) {
+      console.log(`essai ${i + 1} = ${statistique.historique[i]}`);
+    }
+    console.log(
+      `Bravo ! Vous avez réussi en ${statistique.historique.length} tentatives et ${statistique.duree} secondes !`,
+    );
+  }
+}
+
+// Lancement du jeu
+function jouer() {
+  statistique.tempsDebut = Date.now();
+  demanderTentative();
+  statistique.tempsFin = Date.now();
+  statistique.duree = Math.floor(
+    (statistique.tempsFin - statistique.tempsDebut) / 1000,
+  );
+
+  afficherResultat();
+}
+
+//--------------TEST------------
+
+//nombre secret affiché pour les test
+console.log("testDevNbresecret = " + statistique.secret);
+
+//Lancement du jeu
+jouer();
+
+//test Etat de la partie
+console.log("partie gagnée : " + statistique.aGagne);
